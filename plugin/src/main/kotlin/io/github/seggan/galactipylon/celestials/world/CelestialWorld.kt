@@ -1,5 +1,6 @@
-package io.github.seggan.galactipylon.api
+package io.github.seggan.galactipylon.celestials.world
 
+import io.github.seggan.galactipylon.celestials.CelestialObject
 import org.bukkit.NamespacedKey
 import org.bukkit.World
 

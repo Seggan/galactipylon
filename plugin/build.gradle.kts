@@ -19,11 +19,15 @@ repositories {
         name = "JitPack"
     }
     maven("https://repo.xenondevs.xyz/releases")
+    maven("https://repo.codemc.io/repository/maven-releases/") {
+        name = "CodeMC"
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
     compileOnly("io.github.pylonmc:pylon-core:0.20.0")
+    implementation("com.github.retrooper:packetevents-spigot:2.10.0")
 }
 
 kotlin {
@@ -56,7 +60,7 @@ paper {
     bootstrapper = "io.github.seggan.galactipylon.Bootstrapper"
     apiVersion = "1.21.10"
     authors = listOf("Seggan")
-    description = "The Pylon continuations of Galactifun2"
+    description = "The Pylon continuation of Galactifun2"
     bootstrapDependencies {
         register("PylonCore") {
             required = true
