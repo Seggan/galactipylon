@@ -2,21 +2,21 @@ import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
     kotlin("jvm")
-    id("com.gradleup.shadow") version "8.3.0"
+    id("com.gradleup.shadow") version "9.0.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
-    id("de.eldoria.plugin-yml.paper") version "0.8.0"
+    id("net.minecrell.plugin-yml.paper") version "0.6.0"
 }
 
 group = "io.github.seggan"
 version = "1.0-SNAPSHOT"
 
+val rebarVersion = rootProject.property("rebar.version").toString()
+val pylonVersion = rootProject.property("pylon.version").toString()
+
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/") {
         name = "papermc-repo"
-    }
-    maven("https://jitpack.io") {
-        name = "JitPack"
     }
     maven("https://repo.xenondevs.xyz/releases")
     maven("https://repo.codemc.io/repository/maven-releases/") {
@@ -25,13 +25,12 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
-    compileOnly("io.github.pylonmc:pylon-core:0.20.0")
-    implementation("com.github.retrooper:packetevents-spigot:2.10.0")
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
+    compileOnly("io.github.pylonmc:rebar:$rebarVersion")
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 tasks.build {
@@ -47,10 +46,10 @@ tasks.shadowJar {
 
 tasks.runServer {
     downloadPlugins {
-        github("pylonmc", "pylon-core", "0.20.0", "pylon-core-0.20.0.jar")
-        github("pylonmc", "pylon-base", "0.13.1", "pylon-base-0.13.1.jar")
+        github("pylonmc", "rebar", rebarVersion, "rebar-$rebarVersion.jar")
+        github("pylonmc", "pylon", pylonVersion, "pylon-$pylonVersion.jar")
     }
-    minecraftVersion("1.21.10")
+    minecraftVersion("26.1.2")
 }
 
 paper {
@@ -58,18 +57,18 @@ paper {
     version = project.version.toString()
     main = "io.github.seggan.galactipylon.Galactipylon"
     bootstrapper = "io.github.seggan.galactipylon.Bootstrapper"
-    apiVersion = "1.21.10"
+    apiVersion = "26.1"
     authors = listOf("Seggan")
     description = "The Pylon continuation of Galactifun2"
     bootstrapDependencies {
-        register("PylonCore") {
+        register("Rebar") {
             required = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
             joinClasspath = true
         }
     }
     serverDependencies {
-        register("PylonCore") {
+        register("Rebar") {
             required = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
             joinClasspath = true

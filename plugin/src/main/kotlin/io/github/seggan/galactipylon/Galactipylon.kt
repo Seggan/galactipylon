@@ -1,16 +1,16 @@
 package io.github.seggan.galactipylon
 
-import io.github.pylonmc.pylon.core.addon.PylonAddon
+import io.github.pylonmc.rebar.addon.RebarAddon
 import io.github.seggan.galactipylon.base.Earth
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 
-object Galactipylon : JavaPlugin(), PylonAddon {
+object Galactipylon : JavaPlugin(), RebarAddon {
 
     override fun onEnable() {
-        registerWithPylon()
+        registerWithRebar()
         Earth.register()
     }
 
