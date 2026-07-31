@@ -1,13 +1,16 @@
 package io.github.seggan.galactipylon.celestials
 
 import io.github.seggan.galactipylon.GalactipylonRegistry
-import io.github.seggan.galactipylon.celestials.property.Orbit
 import org.bukkit.Keyed
 import org.bukkit.NamespacedKey
 
-abstract class CelestialObject(private val key: NamespacedKey) : Keyed {
+sealed class CelestialObject(private val key: NamespacedKey) : Keyed {
 
-    abstract val orbit: Orbit
+    val orbiters: List<PlanetaryObject>
+        get() = GalactipylonRegistry.CELESTIAL_OBJECTS
+            .filterIsInstance<PlanetaryObject>()
+            .filter { it.orbit.parent == this }
+
 
     override fun getKey() = key
 

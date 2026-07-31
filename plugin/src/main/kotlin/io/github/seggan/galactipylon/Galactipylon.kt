@@ -2,6 +2,7 @@ package io.github.seggan.galactipylon
 
 import io.github.pylonmc.rebar.addon.RebarAddon
 import io.github.seggan.galactipylon.base.Earth
+import io.github.seggan.galactipylon.base.Sun
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.plugin.java.JavaPlugin
@@ -11,6 +12,7 @@ object Galactipylon : JavaPlugin(), RebarAddon {
 
     override fun onEnable() {
         registerWithRebar()
+        Sun.register()
         Earth.register()
     }
 
