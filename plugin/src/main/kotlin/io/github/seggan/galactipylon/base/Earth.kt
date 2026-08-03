@@ -6,6 +6,7 @@ import io.github.seggan.galactipylon.celestials.property.Orbit
 import io.github.seggan.galactipylon.celestials.world.PlanetaryWorld
 import io.github.seggan.galactipylon.key
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import kotlin.time.Instant
 
 object Earth : PlanetaryWorld(key("earth")) {
@@ -19,4 +20,6 @@ object Earth : PlanetaryWorld(key("earth")) {
         longitudeOfPeriapsis = 102.94719 * DEGREES,
         timeOfPeriapsis = Instant.parse("2000-01-03T05:17:00Z")
     )
+
+    override val displayMaterial = Material.GRASS_BLOCK
 }

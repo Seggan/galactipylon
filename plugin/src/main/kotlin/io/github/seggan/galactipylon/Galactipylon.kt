@@ -1,6 +1,7 @@
 package io.github.seggan.galactipylon
 
 import io.github.pylonmc.rebar.addon.RebarAddon
+import io.github.pylonmc.rebar.content.guide.RebarGuide
 import io.github.seggan.galactipylon.base.Earth
 import io.github.seggan.galactipylon.base.Sun
 import org.bukkit.Material
@@ -14,10 +15,12 @@ object Galactipylon : JavaPlugin(), RebarAddon {
         registerWithRebar()
         Sun.register()
         Earth.register()
+
+        RebarGuide.rootPage.addPage(Material.END_STONE, GalactipylonPages.UNIVERSE)
     }
 
     override val javaPlugin = this
-    override val languages = setOf(Locale.ENGLISH)
+    override val defaultLanguage = Locale.ENGLISH
     override val material = Material.END_STONE
 }
 

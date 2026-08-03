@@ -1,0 +1,7 @@
+planet:
+  sun: "The Sun"
+  earth: "The Earth"
+
+guide:
+  page:
+    universe: "The Universe"

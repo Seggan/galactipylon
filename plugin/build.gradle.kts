@@ -11,7 +11,6 @@ group = "io.github.seggan"
 version = "1.0-SNAPSHOT"
 
 val rebarVersion = rootProject.property("rebar.version").toString()
-val pylonVersion = rootProject.property("pylon.version").toString()
 
 repositories {
     mavenCentral()
@@ -45,9 +44,11 @@ tasks.shadowJar {
 }
 
 tasks.runServer {
+    doFirst {
+        project.projectDir.resolve("run/plugins").deleteRecursively()
+    }
     downloadPlugins {
         github("pylonmc", "rebar", rebarVersion, "rebar-$rebarVersion.jar")
-        github("pylonmc", "pylon", pylonVersion, "pylon-$pylonVersion.jar")
     }
     minecraftVersion("26.1.2")
 }
