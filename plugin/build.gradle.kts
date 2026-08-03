@@ -1,10 +1,11 @@
 import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
+    java
     kotlin("jvm")
     id("com.gradleup.shadow") version "9.0.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
-    id("net.minecrell.plugin-yml.paper") version "0.6.0"
+    id("de.eldoria.plugin-yml.paper") version "0.9.0"
 }
 
 group = "io.github.seggan"
@@ -18,18 +19,22 @@ repositories {
         name = "papermc-repo"
     }
     maven("https://repo.xenondevs.xyz/releases")
-    maven("https://repo.codemc.io/repository/maven-releases/") {
-        name = "CodeMC"
-    }
+    maven("https://repo.wyck.dev/releases/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
     compileOnly("io.github.pylonmc:rebar:$rebarVersion")
+    paperLibrary("dev.wyck:Wyck:3.2.0")
 }
 
 kotlin {
     jvmToolchain(25)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.build {
@@ -58,9 +63,11 @@ paper {
     version = project.version.toString()
     main = "io.github.seggan.galactipylon.Galactipylon"
     bootstrapper = "io.github.seggan.galactipylon.Bootstrapper"
+    loader = "io.github.seggan.galactipylon.Loader"
     apiVersion = "26.1"
     authors = listOf("Seggan")
     description = "The Pylon continuation of Galactifun2"
+    generateLibrariesJson = true
     bootstrapDependencies {
         register("Rebar") {
             required = true
@@ -75,4 +82,8 @@ paper {
             joinClasspath = true
         }
     }
+}
+
+tasks.generatePaperPluginDescription {
+    useDefaultCentralProxy()
 }
