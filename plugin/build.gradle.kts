@@ -19,13 +19,13 @@ repositories {
         name = "papermc-repo"
     }
     maven("https://repo.xenondevs.xyz/releases")
-    maven("https://repo.wyck.dev/releases/")
+    maven("https://repo.wyck.dev/snapshots/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
     compileOnly("io.github.pylonmc:rebar:$rebarVersion")
-    paperLibrary("dev.wyck:Wyck:3.2.0")
+    paperLibrary("dev.wyck:Wyck:3.3.0-f6e30a7")
 }
 
 kotlin {

@@ -5,6 +5,9 @@ import org.bukkit.NamespacedKey
 import org.bukkit.World
 
 abstract class PlanetaryWorld(key: NamespacedKey) : PlanetaryObject(key) {
+
+    val worldName = "gp_planet_${key.key}"
+
     val world by lazy { loadWorld() }
 
     protected abstract fun loadWorld(): World

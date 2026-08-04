@@ -2,8 +2,10 @@ package io.github.seggan.galactipylon
 
 import io.github.pylonmc.rebar.addon.RebarAddon
 import io.github.pylonmc.rebar.content.guide.RebarGuide
-import io.github.seggan.galactipylon.base.Earth
 import io.github.seggan.galactipylon.base.Sun
+import io.github.seggan.galactipylon.base.earth.Earth
+import io.github.seggan.galactipylon.base.earth.Moon
+import io.github.seggan.galactipylon.guide.GalactipylonPages
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.plugin.java.JavaPlugin
@@ -15,6 +17,7 @@ object Galactipylon : JavaPlugin(), RebarAddon {
         registerWithRebar()
         Sun.register()
         Earth.register()
+        Moon.register()
 
         RebarGuide.rootPage.addPage(Material.END_STONE, GalactipylonPages.UNIVERSE)
     }

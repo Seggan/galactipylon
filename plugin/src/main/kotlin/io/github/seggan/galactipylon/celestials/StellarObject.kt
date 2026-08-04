@@ -1,8 +1,8 @@
 package io.github.seggan.galactipylon.celestials
 
 import io.github.pylonmc.rebar.item.builder.ItemStackBuilder
-import io.github.seggan.galactipylon.GalactipylonPages
-import io.github.seggan.galactipylon.OrbitersPage
+import io.github.seggan.galactipylon.guide.CelestialButton
+import io.github.seggan.galactipylon.guide.GalactipylonPages
 import org.bukkit.NamespacedKey
 import org.joml.Vector2d
 
@@ -18,6 +18,6 @@ abstract class StellarObject(key: NamespacedKey) : CelestialObject(key) {
 
     override fun register() {
         super.register()
-        GalactipylonPages.UNIVERSE.addPage(displayItem, OrbitersPage(this))
+        GalactipylonPages.UNIVERSE.addButton(CelestialButton(this))
     }
 }

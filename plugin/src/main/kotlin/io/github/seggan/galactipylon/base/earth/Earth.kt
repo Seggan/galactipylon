@@ -1,7 +1,8 @@
-package io.github.seggan.galactipylon.base
+package io.github.seggan.galactipylon.base.earth
 
 import io.github.seggan.galactipylon.AU
 import io.github.seggan.galactipylon.DEGREES
+import io.github.seggan.galactipylon.base.Sun
 import io.github.seggan.galactipylon.celestials.property.Orbit
 import io.github.seggan.galactipylon.celestials.world.PlanetaryWorld
 import io.github.seggan.galactipylon.key
