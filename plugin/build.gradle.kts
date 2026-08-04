@@ -6,6 +6,7 @@ plugins {
     id("com.gradleup.shadow") version "9.0.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id("de.eldoria.plugin-yml.paper") version "0.9.0"
+    //id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
 }
 
 group = "io.github.seggan"
@@ -23,9 +24,10 @@ repositories {
 }
 
 dependencies {
+    //paperweight.paperDevBundle("26.1.2.build.+")
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
     compileOnly("io.github.pylonmc:rebar:$rebarVersion")
-    paperLibrary("dev.wyck:Wyck:3.3.0-f6e30a7")
+    paperLibrary("dev.wyck:Wyck:3.3.0-1a0feb5")
 }
 
 kotlin {
