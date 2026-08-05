@@ -15,10 +15,13 @@ import dev.wyck.level.dimension.timeline.Timeline
 import dev.wyck.worldgen.Decoration
 import dev.wyck.worldgen.HeightmapType
 import dev.wyck.worldgen.biome.BiomeSource
+import dev.wyck.worldgen.blockpredicates.BlockPredicate
 import dev.wyck.worldgen.chunk.ChunkGenerator
 import dev.wyck.worldgen.climate.ClimateParameter
 import dev.wyck.worldgen.climate.ClimatePoint
 import dev.wyck.worldgen.feature.ConfiguredFeature
+import dev.wyck.worldgen.feature.FeatureType
+import dev.wyck.worldgen.feature.configurations.FeatureConfiguration
 import dev.wyck.worldgen.function.DensityFunction
 import dev.wyck.worldgen.heightproviders.VerticalAnchor
 import dev.wyck.worldgen.noise.Noise
@@ -29,12 +32,9 @@ import dev.wyck.worldgen.placement.PlacementModifier
 import dev.wyck.worldgen.surface.SurfaceRule
 import dev.wyck.worldgen.surface.condition.CaveSurface
 import dev.wyck.worldgen.synth.NoiseParameters
-import io.github.seggan.galactipylon.DEGREES
-import io.github.seggan.galactipylon.asResourceKey
+import io.github.seggan.galactipylon.*
 import io.github.seggan.galactipylon.celestials.property.Orbit
 import io.github.seggan.galactipylon.celestials.world.AlienWorld
-import io.github.seggan.galactipylon.key
-import io.github.seggan.galactipylon.plus
 import io.github.seggan.galactipylon.worldgen.feature.Crater
 import org.bukkit.Color
 import org.bukkit.Material
@@ -213,6 +213,57 @@ object Moon : AlienWorld(key("moon")) {
         )
         .register()
 
+    private val impactBasin = Biome.builder(key("lunar_impact_basin").asResourceKey())
+        .attribute(EnvironmentAttributes.FOG_COLOR, Color.BLACK.asRGB())
+        .attribute(EnvironmentAttributes.SKY_COLOR, Color.BLACK.asRGB())
+        .climateSettings(
+            ClimateSettings.builder()
+                .hasPrecipitation(false)
+                .temperature(-0.5f)
+                .downfall(0f)
+                .build()
+        )
+        .specialEffects(BiomeSpecialEffects.DEFAULT)
+        .generationSettings(
+            BiomeGenerationSettings.builder()
+                .feature(
+                    Decoration.SURFACE_STRUCTURES, PlacedFeature.builder()
+                        .feature(
+                            ConfiguredFeature.custom<Crater.Config>()
+                                .resourceKey(Crater.key())
+                                .feature(Crater)
+                                .config(Crater.Config(1..10, 2..25))
+                                .build()
+                        )
+                        .modifier(
+                            PlacementModifier.biomeFilter(),
+                            PlacementModifier.rarityFilter(3),
+                            PlacementModifier.inSquare(),
+                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE_WG)
+                        )
+                        .build()
+                )
+                .feature(
+                    Decoration.SURFACE_STRUCTURES, PlacedFeature.builder()
+                        .feature(
+                            ConfiguredFeature.of(
+                                FeatureType.BLOCK_BLOB, FeatureConfiguration.blockBlob()
+                                    .state(Material.BASALT)
+                                    .canPlaceOn(BlockPredicate.alwaysTrue())
+                                    .build()
+                            )
+                        )
+                        .modifier(
+                            PlacementModifier.biomeFilter(),
+                            PlacementModifier.inSquare(),
+                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE_WG)
+                        )
+                        .build()
+                )
+                .build()
+        )
+        .register()
+
     private val mainNoise = NoiseParameters.builder()
         .resourceKey(key.asResourceKey())
         .firstOctave(-10)
@@ -227,6 +278,22 @@ object Moon : AlienWorld(key("moon")) {
         .build()
         .register()
 
+    private val impactBasinNoise = DensityFunction
+        .noise(
+            NoiseParameters.builder()
+                .resourceKey(key("lunar_impact_basins").asResourceKey())
+                .firstOctave(-9)
+                .amplitudes(1.0)
+                .build()
+                .register(),
+            0.1,
+            0.0
+        )
+        .square()
+        .clamp(0.5, 100.0)
+        .add(DensityFunction.constant(-0.5))
+        .mul(DensityFunction.constant(3.0))
+
     override val generator = ChunkGenerator.noise()
         .biomeSource(
             BiomeSource.multiNoise()
@@ -235,7 +302,7 @@ object Moon : AlienWorld(key("moon")) {
                         .temperature(ClimateParameter.zero())
                         .humidity(ClimateParameter.zero())
                         .erosion(ClimateParameter.zero())
-                        .weirdness(ClimateParameter.zero())
+                        .weirdness(ClimateParameter.point(-0.9))
                         .depth(ClimateParameter.zero())
                         .continentalness(ClimateParameter.point(1.0))
                         .build()
@@ -245,7 +312,7 @@ object Moon : AlienWorld(key("moon")) {
                         .temperature(ClimateParameter.zero())
                         .humidity(ClimateParameter.zero())
                         .erosion(ClimateParameter.point(-1.0))
-                        .weirdness(ClimateParameter.zero())
+                        .weirdness(ClimateParameter.point(-0.9))
                         .depth(ClimateParameter.zero())
                         .continentalness(ClimateParameter.point(-1.0))
                         .build()
@@ -255,7 +322,17 @@ object Moon : AlienWorld(key("moon")) {
                         .temperature(ClimateParameter.zero())
                         .humidity(ClimateParameter.zero())
                         .erosion(ClimateParameter.point(1.0))
-                        .weirdness(ClimateParameter.zero())
+                        .weirdness(ClimateParameter.point(-0.9))
+                        .depth(ClimateParameter.zero())
+                        .continentalness(ClimateParameter.point(-0.6))
+                        .build()
+                )
+                .add(
+                    impactBasin, ClimatePoint.builder()
+                        .temperature(ClimateParameter.zero())
+                        .humidity(ClimateParameter.zero())
+                        .erosion(ClimateParameter.point(1.0))
+                        .weirdness(ClimateParameter.point(1.0))
                         .depth(ClimateParameter.zero())
                         .continentalness(ClimateParameter.point(-0.6))
                         .build()
@@ -282,7 +359,7 @@ object Moon : AlienWorld(key("moon")) {
                         .continents(DensityFunction.noise(mainNoise, 1.0, 0.0).flatCache().clamp(-1.0, 1.0))
                         .erosion(DensityFunction.noise(erosionNoise, 1.0, 0.0).flatCache().clamp(-1.0, 1.0))
                         .depth(DensityFunction.zero())
-                        .ridges(DensityFunction.zero())
+                        .ridges(impactBasinNoise.flatCache())
 
                         .veinToggle(DensityFunction.constant(-1.0))
                         .veinRidged(DensityFunction.constant(0.0))
@@ -290,8 +367,10 @@ object Moon : AlienWorld(key("moon")) {
 
                         .preliminarySurfaceLevel(DensityFunction.zero())
                         .finalDensity(
-                            DensityFunction.yClampedGradient(MIN_HEIGHT, 200, 1.0, -1.0) +
-                                    DensityFunction.noise(mainNoise, 1.0, 0.0).flatCache().interpolated().quarterNegative()
+                            DensityFunction.yClampedGradient(MIN_HEIGHT, 200, 1.0, -1.0)
+                                    + DensityFunction.noise(mainNoise, 1.0, 0.0).flatCache().interpolated()
+                                .quarterNegative()
+                                    - impactBasinNoise.flatCache().interpolated()
                         )
 
                         .build()

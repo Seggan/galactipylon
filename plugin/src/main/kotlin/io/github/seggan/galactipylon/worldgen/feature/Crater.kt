@@ -38,9 +38,10 @@ object Crater : CustomFeature<Crater.Config>(Config::defaults, ResourceKey.of("g
                 }
 
                 val bottom = BlockVector(vector.x, vector.y - depthHere, vector.z)
-                context.setBlock(bottom, type)
-                bottom.y -= 1
-                context.setBlock(bottom, type)
+                repeat(3) {
+                    context.setBlock(bottom, type)
+                    bottom.y -= 1
+                }
                 for (y in 0 until depthHere) {
                     context.removeBlock(BlockVector(vector.x, vector.y - y, vector.z))
                 }
