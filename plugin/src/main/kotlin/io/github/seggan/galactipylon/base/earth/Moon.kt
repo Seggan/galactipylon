@@ -1,6 +1,7 @@
 package io.github.seggan.galactipylon.base.earth
 
 import dev.wyck.biome.Biome
+import dev.wyck.biome.BiomeGenerationSettings
 import dev.wyck.biome.BiomeSpecialEffects
 import dev.wyck.biome.ClimateSettings
 import dev.wyck.environment.attribute.EnvironmentAttributes
@@ -11,15 +12,20 @@ import dev.wyck.level.dimension.clock.WorldClock
 import dev.wyck.level.dimension.timeline.AttributeTrack
 import dev.wyck.level.dimension.timeline.Easing
 import dev.wyck.level.dimension.timeline.Timeline
+import dev.wyck.worldgen.Decoration
+import dev.wyck.worldgen.HeightmapType
 import dev.wyck.worldgen.biome.BiomeSource
 import dev.wyck.worldgen.chunk.ChunkGenerator
 import dev.wyck.worldgen.climate.ClimateParameter
 import dev.wyck.worldgen.climate.ClimatePoint
+import dev.wyck.worldgen.feature.ConfiguredFeature
 import dev.wyck.worldgen.function.DensityFunction
 import dev.wyck.worldgen.heightproviders.VerticalAnchor
 import dev.wyck.worldgen.noise.Noise
 import dev.wyck.worldgen.noise.NoiseRouter
 import dev.wyck.worldgen.noise.NoiseSettings
+import dev.wyck.worldgen.placement.PlacedFeature
+import dev.wyck.worldgen.placement.PlacementModifier
 import dev.wyck.worldgen.surface.SurfaceRule
 import dev.wyck.worldgen.surface.condition.CaveSurface
 import dev.wyck.worldgen.synth.NoiseParameters
@@ -29,6 +35,7 @@ import io.github.seggan.galactipylon.celestials.property.Orbit
 import io.github.seggan.galactipylon.celestials.world.AlienWorld
 import io.github.seggan.galactipylon.key
 import io.github.seggan.galactipylon.plus
+import io.github.seggan.galactipylon.worldgen.feature.Crater
 import org.bukkit.Color
 import org.bukkit.Material
 import kotlin.time.Instant
@@ -116,6 +123,27 @@ object Moon : AlienWorld(key("moon")) {
                 .build()
         )
         .specialEffects(BiomeSpecialEffects.DEFAULT)
+        .generationSettings(
+            BiomeGenerationSettings.builder()
+                .feature(
+                    Decoration.SURFACE_STRUCTURES, PlacedFeature.builder()
+                        .feature(
+                            ConfiguredFeature.custom<Crater.Config>()
+                                .resourceKey(Crater.key())
+                                .feature(Crater)
+                                .config(Crater.Config(4..10, 10..30))
+                                .build()
+                        )
+                        .modifier(
+                            PlacementModifier.biomeFilter(),
+                            PlacementModifier.rarityFilter(10),
+                            PlacementModifier.inSquare(),
+                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE_WG)
+                        )
+                        .build()
+                )
+                .build()
+        )
         .register()
 
     private val lunarHighlands = Biome.builder(key("lunar_highlands").asResourceKey())
@@ -129,6 +157,27 @@ object Moon : AlienWorld(key("moon")) {
                 .build()
         )
         .specialEffects(BiomeSpecialEffects.DEFAULT)
+        .generationSettings(
+            BiomeGenerationSettings.builder()
+                .feature(
+                    Decoration.SURFACE_STRUCTURES, PlacedFeature.builder()
+                        .feature(
+                            ConfiguredFeature.custom<Crater.Config>()
+                                .resourceKey(Crater.key())
+                                .feature(Crater)
+                                .config(Crater.Config(1..5, 2..8))
+                                .build()
+                        )
+                        .modifier(
+                            PlacementModifier.biomeFilter(),
+                            PlacementModifier.rarityFilter(40),
+                            PlacementModifier.inSquare(),
+                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE_WG)
+                        )
+                        .build()
+                )
+                .build()
+        )
         .register()
 
     private val mainNoise = NoiseParameters.builder()
@@ -148,7 +197,7 @@ object Moon : AlienWorld(key("moon")) {
                         .erosion(ClimateParameter.zero())
                         .weirdness(ClimateParameter.zero())
                         .depth(ClimateParameter.zero())
-                        .continentalness(ClimateParameter.span(0.0, 1.0))
+                        .continentalness(ClimateParameter.point(1.0))
                         .build()
                 )
                 .add(
@@ -158,7 +207,7 @@ object Moon : AlienWorld(key("moon")) {
                         .erosion(ClimateParameter.zero())
                         .weirdness(ClimateParameter.zero())
                         .depth(ClimateParameter.zero())
-                        .continentalness(ClimateParameter.span(-1.0, 0.0))
+                        .continentalness(ClimateParameter.point(-1.0))
                         .build()
                 )
                 .build()
@@ -191,7 +240,7 @@ object Moon : AlienWorld(key("moon")) {
 
                         .preliminarySurfaceLevel(DensityFunction.zero())
                         .finalDensity(
-                            DensityFunction.yClampedGradient(MIN_HEIGHT, MAX_HEIGHT, 1.0, -1.0) +
+                            DensityFunction.yClampedGradient(MIN_HEIGHT, 200, 1.0, -1.0) +
                                     DensityFunction.noise(mainNoise, 1.0, 0.0).quarterNegative()
                         )
 
@@ -212,11 +261,11 @@ object Moon : AlienWorld(key("moon")) {
                             SurfaceRule.sequence(
                                 SurfaceRule.ifTrue(
                                     SurfaceRule.isBiome(lunarMaria),
-                                    SurfaceRule.block(Material.GRAY_CONCRETE_POWDER)
+                                    SurfaceRule.block(Material.GRAY_CONCRETE)
                                 ),
                                 SurfaceRule.ifTrue(
                                     SurfaceRule.isBiome(lunarHighlands),
-                                    SurfaceRule.block(Material.GRAY_CONCRETE)
+                                    SurfaceRule.block(Material.GRAY_CONCRETE_POWDER)
                                 )
                             )
                         )
