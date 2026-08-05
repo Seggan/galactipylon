@@ -180,10 +180,50 @@ object Moon : AlienWorld(key("moon")) {
         )
         .register()
 
+    private val lunarFarSide = Biome.builder(key("lunar_far_side").asResourceKey())
+        .attribute(EnvironmentAttributes.FOG_COLOR, Color.BLACK.asRGB())
+        .attribute(EnvironmentAttributes.SKY_COLOR, Color.BLACK.asRGB())
+        .climateSettings(
+            ClimateSettings.builder()
+                .hasPrecipitation(false)
+                .temperature(-0.5f)
+                .downfall(0f)
+                .build()
+        )
+        .specialEffects(BiomeSpecialEffects.DEFAULT)
+        .generationSettings(
+            BiomeGenerationSettings.builder()
+                .feature(
+                    Decoration.SURFACE_STRUCTURES, PlacedFeature.builder()
+                        .feature(
+                            ConfiguredFeature.custom<Crater.Config>()
+                                .resourceKey(Crater.key())
+                                .feature(Crater)
+                                .config(Crater.Config(1..10, 2..25))
+                                .build()
+                        )
+                        .modifier(
+                            PlacementModifier.biomeFilter(),
+                            PlacementModifier.inSquare(),
+                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE_WG)
+                        )
+                        .build()
+                )
+                .build()
+        )
+        .register()
+
     private val mainNoise = NoiseParameters.builder()
         .resourceKey(key.asResourceKey())
         .firstOctave(-10)
         .amplitudes(1.0, 2.0, 2.0, 2.0, 2.0, 1.0, 1.0)
+        .build()
+        .register()
+
+    private val erosionNoise = NoiseParameters.builder()
+        .resourceKey(key("lunar_erosion").asResourceKey())
+        .firstOctave(-10)
+        .amplitudes(2.0, 1.0, 0.0)
         .build()
         .register()
 
@@ -204,10 +244,20 @@ object Moon : AlienWorld(key("moon")) {
                     lunarMaria, ClimatePoint.builder()
                         .temperature(ClimateParameter.zero())
                         .humidity(ClimateParameter.zero())
-                        .erosion(ClimateParameter.zero())
+                        .erosion(ClimateParameter.point(-1.0))
                         .weirdness(ClimateParameter.zero())
                         .depth(ClimateParameter.zero())
                         .continentalness(ClimateParameter.point(-1.0))
+                        .build()
+                )
+                .add(
+                    lunarFarSide, ClimatePoint.builder()
+                        .temperature(ClimateParameter.zero())
+                        .humidity(ClimateParameter.zero())
+                        .erosion(ClimateParameter.point(1.0))
+                        .weirdness(ClimateParameter.zero())
+                        .depth(ClimateParameter.zero())
+                        .continentalness(ClimateParameter.point(-0.6))
                         .build()
                 )
                 .build()
@@ -229,8 +279,8 @@ object Moon : AlienWorld(key("moon")) {
 
                         .temperature(DensityFunction.zero())
                         .vegetation(DensityFunction.zero())
-                        .continents(DensityFunction.noise(mainNoise, 1.0, 0.0).clamp(-1.0, 1.0))
-                        .erosion(DensityFunction.zero())
+                        .continents(DensityFunction.noise(mainNoise, 1.0, 0.0).flatCache().clamp(-1.0, 1.0))
+                        .erosion(DensityFunction.noise(erosionNoise, 1.0, 0.0).flatCache().clamp(-1.0, 1.0))
                         .depth(DensityFunction.zero())
                         .ridges(DensityFunction.zero())
 
@@ -241,7 +291,7 @@ object Moon : AlienWorld(key("moon")) {
                         .preliminarySurfaceLevel(DensityFunction.zero())
                         .finalDensity(
                             DensityFunction.yClampedGradient(MIN_HEIGHT, 200, 1.0, -1.0) +
-                                    DensityFunction.noise(mainNoise, 1.0, 0.0).quarterNegative()
+                                    DensityFunction.noise(mainNoise, 1.0, 0.0).flatCache().interpolated().quarterNegative()
                         )
 
                         .build()
@@ -264,7 +314,7 @@ object Moon : AlienWorld(key("moon")) {
                                     SurfaceRule.block(Material.GRAY_CONCRETE)
                                 ),
                                 SurfaceRule.ifTrue(
-                                    SurfaceRule.isBiome(lunarHighlands),
+                                    SurfaceRule.not(SurfaceRule.isBiome(lunarMaria)),
                                     SurfaceRule.block(Material.GRAY_CONCRETE_POWDER)
                                 )
                             )
