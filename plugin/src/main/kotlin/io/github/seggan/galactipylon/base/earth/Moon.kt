@@ -16,6 +16,9 @@ import dev.wyck.worldgen.Decoration
 import dev.wyck.worldgen.HeightmapType
 import dev.wyck.worldgen.biome.BiomeSource
 import dev.wyck.worldgen.blockpredicates.BlockPredicate
+import dev.wyck.worldgen.carver.CanyonCarverConfiguration
+import dev.wyck.worldgen.carver.CarverDebugSettings
+import dev.wyck.worldgen.carver.ConfiguredWorldCarver
 import dev.wyck.worldgen.chunk.ChunkGenerator
 import dev.wyck.worldgen.climate.ClimateParameter
 import dev.wyck.worldgen.climate.ClimatePoint
@@ -23,6 +26,7 @@ import dev.wyck.worldgen.feature.ConfiguredFeature
 import dev.wyck.worldgen.feature.FeatureType
 import dev.wyck.worldgen.feature.configurations.FeatureConfiguration
 import dev.wyck.worldgen.function.DensityFunction
+import dev.wyck.worldgen.heightproviders.HeightProvider
 import dev.wyck.worldgen.heightproviders.VerticalAnchor
 import dev.wyck.worldgen.noise.Noise
 import dev.wyck.worldgen.noise.NoiseRouter
@@ -32,6 +36,7 @@ import dev.wyck.worldgen.placement.PlacementModifier
 import dev.wyck.worldgen.surface.SurfaceRule
 import dev.wyck.worldgen.surface.condition.CaveSurface
 import dev.wyck.worldgen.synth.NoiseParameters
+import dev.wyck.worldgen.valueproviders.FloatProvider
 import io.github.seggan.galactipylon.*
 import io.github.seggan.galactipylon.celestials.property.Orbit
 import io.github.seggan.galactipylon.celestials.world.AlienWorld
@@ -126,7 +131,7 @@ object Moon : AlienWorld(key("moon")) {
         .generationSettings(
             BiomeGenerationSettings.builder()
                 .feature(
-                    Decoration.SURFACE_STRUCTURES, PlacedFeature.builder()
+                    Decoration.LOCAL_MODIFICATIONS, PlacedFeature.builder()
                         .feature(
                             ConfiguredFeature.custom<Crater.Config>()
                                 .resourceKey(Crater.key())
@@ -138,7 +143,7 @@ object Moon : AlienWorld(key("moon")) {
                             PlacementModifier.biomeFilter(),
                             PlacementModifier.rarityFilter(10),
                             PlacementModifier.inSquare(),
-                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE_WG)
+                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE)
                         )
                         .build()
                 )
@@ -160,7 +165,7 @@ object Moon : AlienWorld(key("moon")) {
         .generationSettings(
             BiomeGenerationSettings.builder()
                 .feature(
-                    Decoration.SURFACE_STRUCTURES, PlacedFeature.builder()
+                    Decoration.LOCAL_MODIFICATIONS, PlacedFeature.builder()
                         .feature(
                             ConfiguredFeature.custom<Crater.Config>()
                                 .resourceKey(Crater.key())
@@ -172,7 +177,7 @@ object Moon : AlienWorld(key("moon")) {
                             PlacementModifier.biomeFilter(),
                             PlacementModifier.rarityFilter(40),
                             PlacementModifier.inSquare(),
-                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE_WG)
+                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE)
                         )
                         .build()
                 )
@@ -194,7 +199,7 @@ object Moon : AlienWorld(key("moon")) {
         .generationSettings(
             BiomeGenerationSettings.builder()
                 .feature(
-                    Decoration.SURFACE_STRUCTURES, PlacedFeature.builder()
+                    Decoration.LOCAL_MODIFICATIONS, PlacedFeature.builder()
                         .feature(
                             ConfiguredFeature.custom<Crater.Config>()
                                 .resourceKey(Crater.key())
@@ -205,7 +210,7 @@ object Moon : AlienWorld(key("moon")) {
                         .modifier(
                             PlacementModifier.biomeFilter(),
                             PlacementModifier.inSquare(),
-                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE_WG)
+                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE)
                         )
                         .build()
                 )
@@ -227,7 +232,7 @@ object Moon : AlienWorld(key("moon")) {
         .generationSettings(
             BiomeGenerationSettings.builder()
                 .feature(
-                    Decoration.SURFACE_STRUCTURES, PlacedFeature.builder()
+                    Decoration.LOCAL_MODIFICATIONS, PlacedFeature.builder()
                         .feature(
                             ConfiguredFeature.custom<Crater.Config>()
                                 .resourceKey(Crater.key())
@@ -239,7 +244,7 @@ object Moon : AlienWorld(key("moon")) {
                             PlacementModifier.biomeFilter(),
                             PlacementModifier.rarityFilter(3),
                             PlacementModifier.inSquare(),
-                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE_WG)
+                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE)
                         )
                         .build()
                 )
@@ -256,7 +261,32 @@ object Moon : AlienWorld(key("moon")) {
                         .modifier(
                             PlacementModifier.biomeFilter(),
                             PlacementModifier.inSquare(),
-                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE_WG)
+                            PlacementModifier.heightmap(HeightmapType.WORLD_SURFACE)
+                        )
+                        .build()
+                )
+                .carver(
+                    ConfiguredWorldCarver.canyon()
+                        .config(
+                            CanyonCarverConfiguration.builder()
+                                .probability(0.05f)
+                                .y(HeightProvider.uniform(VerticalAnchor.aboveBottom(40), VerticalAnchor.belowTop(100)))
+                                .yScale(FloatProvider.constant(3f))
+                                .verticalRotation(FloatProvider.uniform(0f, 0.1f))
+                                .lavaLevel(VerticalAnchor.bottom())
+                                .replaceable(Material.ANDESITE, Material.GRAY_CONCRETE_POWDER)
+                                .debugSettings(CarverDebugSettings.DEFAULT)
+                                .shape(
+                                    CanyonCarverConfiguration.CanyonShapeConfiguration.builder()
+                                        .distanceFactor(FloatProvider.uniform(0.75f, 1f))
+                                        .thickness(FloatProvider.trapezoid(1f, 6f, 3f))
+                                        .horizontalRadiusFactor(FloatProvider.uniform(0.75f, 1f))
+                                        .verticalRadiusDefaultFactor(1f)
+                                        .verticalRadiusCenterFactor(0f)
+                                        .widthSmoothness(3)
+                                        .build()
+                                )
+                                .build()
                         )
                         .build()
                 )
@@ -293,6 +323,7 @@ object Moon : AlienWorld(key("moon")) {
         .clamp(0.5, 100.0)
         .add(DensityFunction.constant(-0.5))
         .mul(DensityFunction.constant(3.0))
+        .squeeze()
 
     override val generator = ChunkGenerator.noise()
         .biomeSource(
@@ -302,7 +333,7 @@ object Moon : AlienWorld(key("moon")) {
                         .temperature(ClimateParameter.zero())
                         .humidity(ClimateParameter.zero())
                         .erosion(ClimateParameter.zero())
-                        .weirdness(ClimateParameter.point(-0.9))
+                        .weirdness(ClimateParameter.point(-0.95))
                         .depth(ClimateParameter.zero())
                         .continentalness(ClimateParameter.point(1.0))
                         .build()
@@ -312,7 +343,7 @@ object Moon : AlienWorld(key("moon")) {
                         .temperature(ClimateParameter.zero())
                         .humidity(ClimateParameter.zero())
                         .erosion(ClimateParameter.point(-1.0))
-                        .weirdness(ClimateParameter.point(-0.9))
+                        .weirdness(ClimateParameter.point(-0.95))
                         .depth(ClimateParameter.zero())
                         .continentalness(ClimateParameter.point(-1.0))
                         .build()
@@ -322,7 +353,7 @@ object Moon : AlienWorld(key("moon")) {
                         .temperature(ClimateParameter.zero())
                         .humidity(ClimateParameter.zero())
                         .erosion(ClimateParameter.point(1.0))
-                        .weirdness(ClimateParameter.point(-0.9))
+                        .weirdness(ClimateParameter.point(-0.95))
                         .depth(ClimateParameter.zero())
                         .continentalness(ClimateParameter.point(-0.6))
                         .build()
@@ -350,7 +381,7 @@ object Moon : AlienWorld(key("moon")) {
                 .noiseRouter(
                     NoiseRouter.builder()
                         .barrier(DensityFunction.zero())
-                        .fluidLevelFloodedness(DensityFunction.zero())
+                        .fluidLevelFloodedness(DensityFunction.constant(-1.0))
                         .fluidLevelSpread(DensityFunction.zero())
                         .lava(DensityFunction.zero())
 
@@ -365,7 +396,7 @@ object Moon : AlienWorld(key("moon")) {
                         .veinRidged(DensityFunction.constant(0.0))
                         .veinGap(DensityFunction.constant(0.0))
 
-                        .preliminarySurfaceLevel(DensityFunction.zero())
+                        .preliminarySurfaceLevel(DensityFunction.constant(-100.0))
                         .finalDensity(
                             DensityFunction.yClampedGradient(MIN_HEIGHT, 200, 1.0, -1.0)
                                     + DensityFunction.noise(mainNoise, 1.0, 0.0).flatCache().interpolated()
