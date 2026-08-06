@@ -274,7 +274,7 @@ object Moon : AlienWorld(key("moon")) {
                                 .yScale(FloatProvider.constant(3f))
                                 .verticalRotation(FloatProvider.uniform(0f, 0.1f))
                                 .lavaLevel(VerticalAnchor.bottom())
-                                .replaceable(Material.ANDESITE, Material.GRAY_CONCRETE_POWDER)
+                                .replaceable(Material.BASALT, Material.GRAY_CONCRETE_POWDER)
                                 .debugSettings(CarverDebugSettings.DEFAULT)
                                 .shape(
                                     CanyonCarverConfiguration.CanyonShapeConfiguration.builder()
@@ -375,7 +375,7 @@ object Moon : AlienWorld(key("moon")) {
                 .seaLevel(0)
                 .oreVeinsEnabled(true)
                 .aquifersEnabled(false)
-                .defaultBlock(Material.ANDESITE)
+                .defaultBlock(Material.BASALT)
                 .defaultFluid(Material.AIR)
                 .noiseSettings(NoiseSettings.of(MIN_HEIGHT, MIN_HEIGHT + MAX_HEIGHT, 1, 2))
                 .noiseRouter(
@@ -421,7 +421,7 @@ object Moon : AlienWorld(key("moon")) {
                             SurfaceRule.sequence(
                                 SurfaceRule.ifTrue(
                                     SurfaceRule.isBiome(lunarMaria),
-                                    SurfaceRule.block(Material.GRAY_CONCRETE)
+                                    SurfaceRule.block(Material.BLACKSTONE)
                                 ),
                                 SurfaceRule.ifTrue(
                                     SurfaceRule.not(SurfaceRule.isBiome(lunarMaria)),

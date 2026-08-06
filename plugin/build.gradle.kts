@@ -56,7 +56,7 @@ tasks.runServer {
     }
     downloadPlugins {
         github("pylonmc", "rebar", rebarVersion, "rebar-$rebarVersion.jar")
-        modrinth("distant-horizons-support", "0.14.0")
+        hangar("distant-horizons-support", "0.14.0")
     }
     maxHeapSize = "6G"
     jvmArgs = listOf(
