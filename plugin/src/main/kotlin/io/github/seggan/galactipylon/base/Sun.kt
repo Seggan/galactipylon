@@ -9,4 +9,6 @@ object Sun : StellarObject(key("sun")) {
     override val position = Vector2d(0.0, 0.0)
 
     override val displayMaterial = Material.YELLOW_WOOL
+
+    override val mass = 1.988e30
 }

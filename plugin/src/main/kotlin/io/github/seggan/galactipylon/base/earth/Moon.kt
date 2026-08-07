@@ -57,6 +57,8 @@ object Moon : AlienWorld(key("moon")) {
 
     override val displayMaterial = Material.END_STONE
 
+    override val mass = 7.3459e22
+
     override val dimension = Dimension.builder(key.asResourceKey())
         .ambientLight(0.1f)
         .hasSkyLight(true)

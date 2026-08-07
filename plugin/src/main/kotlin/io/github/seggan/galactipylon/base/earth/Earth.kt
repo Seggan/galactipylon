@@ -23,4 +23,6 @@ object Earth : PlanetaryWorld(key("earth")) {
     )
 
     override val displayMaterial = Material.GRASS_BLOCK
+
+    override val mass = 5.97e24
 }

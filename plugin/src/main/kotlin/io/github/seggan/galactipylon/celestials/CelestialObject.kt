@@ -9,6 +9,8 @@ import org.bukkit.inventory.ItemStack
 
 sealed class CelestialObject(private val key: NamespacedKey) : Keyed {
 
+    abstract val mass: Double
+
     val orbiters: List<PlanetaryObject>
         get() = GalactipylonRegistry.CELESTIAL_OBJECTS
             .filterIsInstance<PlanetaryObject>()
