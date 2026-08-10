@@ -32,6 +32,7 @@ dependencies {
 
 kotlin {
     jvmToolchain(25)
+    compilerOptions.freeCompilerArgs = listOf("-XXLanguage:+UnnamedLocalVariables")
 }
 
 java {
