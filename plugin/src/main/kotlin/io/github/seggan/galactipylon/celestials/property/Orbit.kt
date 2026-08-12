@@ -16,6 +16,11 @@ data class Orbit(
     val longitudeOfPeriapsis: Double, // ϖ
     val timeOfPeriapsis: Instant // T
 ) {
+
+    init {
+        require(eccentricity < 1) { "Parabolic and hyperbolic orbits not supported" }
+    }
+
     val period by lazy {
         TAU * sqrt((semimajorAxis * semimajorAxis * semimajorAxis) / (GRAVITATIONAL_CONSTANT * parent.mass))
     }

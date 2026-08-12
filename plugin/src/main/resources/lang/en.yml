@@ -4,6 +4,7 @@ planet:
   sun: "The Sun"
   earth: "The Earth"
   moon: "The Moon"
+  mars: "Mars"
 
 guide:
   page:

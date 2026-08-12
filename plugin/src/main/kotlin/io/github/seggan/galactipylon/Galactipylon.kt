@@ -2,6 +2,7 @@ package io.github.seggan.galactipylon
 
 import io.github.pylonmc.rebar.addon.RebarAddon
 import io.github.pylonmc.rebar.content.guide.RebarGuide
+import io.github.seggan.galactipylon.base.Mars
 import io.github.seggan.galactipylon.base.Sun
 import io.github.seggan.galactipylon.base.earth.Earth
 import io.github.seggan.galactipylon.base.earth.Moon
@@ -18,6 +19,7 @@ object Galactipylon : JavaPlugin(), RebarAddon {
         Sun.register()
         Earth.register()
         Moon.register()
+        Mars.register()
 
         RebarGuide.rootPage.addPage(Material.END_STONE, GalactipylonPages.UNIVERSE)
     }

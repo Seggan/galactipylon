@@ -59,10 +59,12 @@ object Moon : AlienWorld(key("moon")) {
 
     override val mass = 7.3459e22
 
+    private val clock = WorldClock.of(key.asResourceKey())
+
     override val dimension = Dimension.builder(key.asResourceKey())
         .ambientLight(0.1f)
         .hasSkyLight(true)
-        .defaultClock(WorldClock.OVERWORLD)
+        .defaultClock(clock)
         .hasCeiling(false)
         .hasEnderDragonFight(false)
         .skybox(Skybox.OVERWORLD)
@@ -80,7 +82,7 @@ object Moon : AlienWorld(key("moon")) {
         .timeline(
             Timeline.builder()
                 .key(key.asResourceKey())
-                .clock(WorldClock.OVERWORLD)
+                .clock(clock)
                 .periodTicks(DAY_LENGTH_TICKS)
                 .track(
                     AttributeTrack.builder<Float>()
@@ -95,8 +97,8 @@ object Moon : AlienWorld(key("moon")) {
                     AttributeTrack.builder<Float>()
                         .attribute(EnvironmentAttributes.STAR_BRIGHTNESS)
                         .easing(Easing.LINEAR)
-                        .keyframe(DAY_LENGTH_TICKS / 24, 0.1f)
-                        .keyframe(DAY_LENGTH_TICKS / 2 - DAY_LENGTH_TICKS / 24, 0.1f)
+                        .keyframe(0, 0.1f)
+                        .keyframe(DAY_LENGTH_TICKS / 2, 0.1f)
                         .keyframe(DAY_LENGTH_TICKS / 2 + DAY_LENGTH_TICKS / 24, 1f)
                         .keyframe(DAY_LENGTH_TICKS - DAY_LENGTH_TICKS / 24, 1f)
                         .build()
@@ -400,7 +402,7 @@ object Moon : AlienWorld(key("moon")) {
 
                         .preliminarySurfaceLevel(DensityFunction.constant(-100.0))
                         .finalDensity(
-                            DensityFunction.yClampedGradient(MIN_HEIGHT, 200, 1.0, -1.0)
+                            DensityFunction.yClampedGradient(MIN_HEIGHT, 127, 1.0, -1.0)
                                     + DensityFunction.noise(mainNoise, 1.0, 0.0).flatCache().interpolated()
                                 .quarterNegative()
                                     - impactBasinNoise.flatCache().interpolated()
