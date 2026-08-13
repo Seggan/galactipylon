@@ -14,7 +14,8 @@ data class Orbit(
     // Our orbits are always flat, so inclination is always 0
     // Longitude of the ascending node is also always 0
     val longitudeOfPeriapsis: Double, // ϖ
-    val timeOfPeriapsis: Instant // T
+    val timeOfPeriapsis: Instant, // T
+    val retrograde: Boolean = false
 ) {
 
     init {
@@ -27,8 +28,10 @@ data class Orbit(
 
     val meanMotion by lazy { TAU / period }
 
+    val direction = if (retrograde) -1.0 else 1.0
+
     private fun meanAnomaly(time: Instant): Double {
-        return meanMotion * (time - timeOfPeriapsis).inWholeSeconds
+        return meanMotion * (time - timeOfPeriapsis).inWholeSeconds * direction
     }
 
     // code stolen from https://github.com/LordIdra/rust-kepler-solver/blob/master/src/ellipse.rs (thank you idra)
@@ -85,8 +88,8 @@ data class Orbit(
         val r = p / (1 + eccentricity * cos(trueAnomaly))
         val factor = sqrt(GRAVITATIONAL_CONSTANT * parent.mass / p)
         return Vector2d(
-            factor * -sin(trueAnomaly),
-            factor * (eccentricity + cos(trueAnomaly))
+            direction * factor * -sin(trueAnomaly),
+            direction * factor * (eccentricity + cos(trueAnomaly))
         ).mul(rotationMatrix)
     }
 }
