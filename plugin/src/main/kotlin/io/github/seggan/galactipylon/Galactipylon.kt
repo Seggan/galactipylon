@@ -6,6 +6,7 @@ import io.github.seggan.galactipylon.base.Mars
 import io.github.seggan.galactipylon.base.Sun
 import io.github.seggan.galactipylon.base.earth.Earth
 import io.github.seggan.galactipylon.base.earth.Moon
+import io.github.seggan.galactipylon.celestials.world.PlanetaryWorld
 import io.github.seggan.galactipylon.guide.GalactipylonPages
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -21,6 +22,10 @@ object Galactipylon : JavaPlugin(), RebarAddon {
         Moon.register()
         Mars.register()
 
+        val pm = server.pluginManager
+
+        pm.registerEvents(PlanetaryWorld, this)
+
         RebarGuide.rootPage.addPage(Material.END_STONE, GalactipylonPages.UNIVERSE)
     }
 
@@ -30,4 +35,4 @@ object Galactipylon : JavaPlugin(), RebarAddon {
 }
 
 @JvmSynthetic
-internal fun key(key: String) = NamespacedKey(Galactipylon, key)
+internal fun pluginKey(key: String) = NamespacedKey(Galactipylon, key)

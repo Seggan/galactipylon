@@ -30,14 +30,14 @@ import dev.wyck.worldgen.synth.NoiseParameters
 import io.github.seggan.galactipylon.asResourceKey
 import io.github.seggan.galactipylon.celestials.property.Orbit
 import io.github.seggan.galactipylon.celestials.world.AlienWorld
-import io.github.seggan.galactipylon.key
+import io.github.seggan.galactipylon.pluginKey
 import io.github.seggan.galactipylon.plus
 import io.github.seggan.galactipylon.worldgen.feature.Crater
 import org.bukkit.Color
 import org.bukkit.Material
 import kotlin.time.Instant
 
-object Mars : AlienWorld(key("mars")) {
+object Mars : AlienWorld(pluginKey("mars")) {
 
     override val orbit = Orbit(
         parent = Sun,
@@ -50,6 +50,8 @@ object Mars : AlienWorld(key("mars")) {
     override val displayMaterial = Material.RED_SANDSTONE
 
     override val mass = 6.417e23
+
+    override val gravity = 0.378
 
     private val skyColor = Color.fromRGB(0xA1725F)
     private val sunsetColor = Color.fromRGB(0x8CA6BF)
@@ -155,15 +157,15 @@ object Mars : AlienWorld(key("mars")) {
                         .keyframe(DAY_LENGTH_TICKS - DAY_LENGTH_TICKS / 24 * 2, 0)
                         .build()
                 )
-                .timeMarker(key("mars_morning").asResourceKey(), 0, true)
-                .timeMarker(key("mars_noon").asResourceKey(), DAY_LENGTH_TICKS / 4, true)
-                .timeMarker(key("mars_evening").asResourceKey(), DAY_LENGTH_TICKS / 2, true)
-                .timeMarker(key("mars_midnight").asResourceKey(), DAY_LENGTH_TICKS / 4 * 3, true)
+                .timeMarker(pluginKey("mars_morning").asResourceKey(), 0, true)
+                .timeMarker(pluginKey("mars_noon").asResourceKey(), DAY_LENGTH_TICKS / 4, true)
+                .timeMarker(pluginKey("mars_evening").asResourceKey(), DAY_LENGTH_TICKS / 2, true)
+                .timeMarker(pluginKey("mars_midnight").asResourceKey(), DAY_LENGTH_TICKS / 4 * 3, true)
                 .register()
         )
         .register()
 
-    private val marsHighlands = Biome.builder(key("mars_highlands").asResourceKey())
+    private val marsHighlands = Biome.builder(pluginKey("mars_highlands").asResourceKey())
         .attribute(EnvironmentAttributes.FOG_COLOR, skyColor.asRGB())
         .attribute(EnvironmentAttributes.SKY_COLOR, skyColor.asRGB())
         .climateSettings(

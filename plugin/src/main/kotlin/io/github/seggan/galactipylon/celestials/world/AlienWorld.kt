@@ -4,7 +4,6 @@ import dev.wyck.level.LevelCreator
 import dev.wyck.level.dimension.Dimension
 import dev.wyck.level.entity.LevelSpawner
 import dev.wyck.worldgen.chunk.ChunkGenerator
-import io.github.seggan.galactipylon.GalactipylonRegistry
 import io.github.seggan.galactipylon.asResourceKey
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -27,10 +26,5 @@ abstract class AlienWorld(key: NamespacedKey) : PlanetaryWorld(key) {
             .dimension(dimension)
             .generator(generator)
             .create()
-    }
-
-    override fun register() {
-        super.register()
-        GalactipylonRegistry.ALIEN_WORLDS.register(this)
     }
 }

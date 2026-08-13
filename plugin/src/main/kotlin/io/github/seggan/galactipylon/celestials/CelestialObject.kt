@@ -24,7 +24,7 @@ sealed class CelestialObject(private val key: NamespacedKey) : Keyed {
 
     override fun getKey() = key
 
-    open fun register() {
+    fun register() {
         GalactipylonRegistry.CELESTIAL_OBJECTS.register(this)
     }
 }

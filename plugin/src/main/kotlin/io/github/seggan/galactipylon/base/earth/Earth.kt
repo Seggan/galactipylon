@@ -5,12 +5,14 @@ import io.github.seggan.galactipylon.DEGREES
 import io.github.seggan.galactipylon.base.Sun
 import io.github.seggan.galactipylon.celestials.property.Orbit
 import io.github.seggan.galactipylon.celestials.world.PlanetaryWorld
-import io.github.seggan.galactipylon.key
+import io.github.seggan.galactipylon.pluginKey
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import kotlin.time.Instant
 
-object Earth : PlanetaryWorld(key("earth")) {
+object Earth : PlanetaryWorld(pluginKey("earth")) {
+
+    override val gravity = 1.0
 
     override fun loadWorld() = Bukkit.getWorld("world")!!
 
