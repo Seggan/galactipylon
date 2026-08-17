@@ -1,4 +1,4 @@
-package io.github.seggan.galactipylon.base.earth
+package io.github.seggan.galactipylon.base.overworld
 
 import dev.wyck.biome.Biome
 import dev.wyck.biome.BiomeGenerationSettings
@@ -48,7 +48,7 @@ import kotlin.time.Instant
 object Moon : AlienWorld(pluginKey("moon")) {
 
     override val orbit = Orbit(
-        parent = Earth,
+        parent = Overworld,
         semimajorAxis = 3.844e8,
         eccentricity = 0.0554,
         longitudeOfPeriapsis = 83 * DEGREES,

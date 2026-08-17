@@ -1,4 +1,4 @@
-package io.github.seggan.galactipylon.base.earth
+package io.github.seggan.galactipylon.base.overworld
 
 import io.github.seggan.galactipylon.AU
 import io.github.seggan.galactipylon.DEGREES
@@ -8,13 +8,14 @@ import io.github.seggan.galactipylon.celestials.world.PlanetaryWorld
 import io.github.seggan.galactipylon.pluginKey
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.World
 import kotlin.time.Instant
 
-object Earth : PlanetaryWorld(pluginKey("earth")) {
+object Overworld : PlanetaryWorld(pluginKey("overworld")) {
 
     override val gravity = 1.0
 
-    override fun loadWorld() = Bukkit.getWorld("world")!!
+    override fun loadWorld(): World = Bukkit.getWorlds().first()
 
     override val orbit = Orbit(
         parent = Sun,

@@ -2,10 +2,10 @@ package io.github.seggan.galactipylon
 
 import io.github.pylonmc.rebar.addon.RebarAddon
 import io.github.pylonmc.rebar.content.guide.RebarGuide
-import io.github.seggan.galactipylon.base.Mars
 import io.github.seggan.galactipylon.base.Sun
-import io.github.seggan.galactipylon.base.earth.Earth
-import io.github.seggan.galactipylon.base.earth.Moon
+import io.github.seggan.galactipylon.base.majuscule.Majuscule
+import io.github.seggan.galactipylon.base.overworld.Moon
+import io.github.seggan.galactipylon.base.overworld.Overworld
 import io.github.seggan.galactipylon.celestials.world.PlanetaryWorld
 import io.github.seggan.galactipylon.guide.GalactipylonPages
 import org.bukkit.Material
@@ -18,9 +18,9 @@ object Galactipylon : JavaPlugin(), RebarAddon {
     override fun onEnable() {
         registerWithRebar()
         Sun.register()
-        Earth.register()
+        Overworld.register()
         Moon.register()
-        Mars.register()
+        Majuscule.register()
 
         val pm = server.pluginManager
 

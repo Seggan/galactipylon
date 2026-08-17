@@ -2,9 +2,9 @@ addon: "Galactipylon"
 
 planet:
   sun: "The Sun"
-  earth: "The Earth"
+  overworld: "The Overworld"
   moon: "The Moon"
-  mars: "Mars"
+  majuscule: "Majuscule"
 
 guide:
   page:
