@@ -24,8 +24,8 @@ repositories {
 }
 
 dependencies {
-    //paperweight.paperDevBundle("26.1.2.build.+")
-    compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
+    //paperweight.paperDevBundle("26.2.build.+")
+    compileOnly("io.papermc.paper:paper-api:26.2.build.+")
     compileOnly("io.github.pylonmc:rebar:$rebarVersion")
     paperLibrary("dev.wyck:Wyck:3.3.0-1a0feb5")
 }
@@ -82,7 +82,7 @@ tasks.runServer {
         "-Dusing.aikars.flags=https://mcflags.emc.gs",
         "-Daikars.new.flags=true"
     )
-    minecraftVersion("26.1.2")
+    minecraftVersion("26.2")
 }
 
 paper {
@@ -91,7 +91,7 @@ paper {
     main = "io.github.seggan.galactipylon.Galactipylon"
     bootstrapper = "io.github.seggan.galactipylon.Bootstrapper"
     loader = "io.github.seggan.galactipylon.Loader"
-    apiVersion = "26.1"
+    apiVersion = "26.2"
     authors = listOf("Seggan")
     description = "The Pylon continuation of Galactifun2"
     generateLibrariesJson = true
