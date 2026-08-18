@@ -35,4 +35,4 @@ object Galactipylon : JavaPlugin(), RebarAddon {
 }
 
 @JvmSynthetic
-internal fun pluginKey(key: String) = NamespacedKey(Galactipylon, key)
+internal fun galacticKey(key: String) = NamespacedKey(Galactipylon, key)

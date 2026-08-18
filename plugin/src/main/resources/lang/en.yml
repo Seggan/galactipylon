@@ -9,3 +9,11 @@ planet:
 guide:
   page:
     universe: "The Universe"
+
+fluid:
+  nitrogen: "Nitrogen"
+  oxygen: "Oxygen"
+  argon: "Argon"
+  water_vapor: "Water Vapor"
+  carbon_dioxide: "Carbon Dioxide"
+  hydrogen: "Hydrogen"

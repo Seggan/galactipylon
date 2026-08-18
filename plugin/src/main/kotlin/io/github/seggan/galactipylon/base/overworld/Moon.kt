@@ -45,7 +45,7 @@ import org.bukkit.Color
 import org.bukkit.Material
 import kotlin.time.Instant
 
-object Moon : AlienWorld(pluginKey("moon")) {
+object Moon : AlienWorld(galacticKey("moon")) {
 
     override val orbit = Orbit(
         parent = Overworld,
@@ -115,15 +115,15 @@ object Moon : AlienWorld(pluginKey("moon")) {
                         .keyframe(DAY_LENGTH_TICKS - DAY_LENGTH_TICKS / 24, 0.1f)
                         .build()
                 )
-                .timeMarker(pluginKey("lunar_morning").asResourceKey(), 0, true)
-                .timeMarker(pluginKey("lunar_noon").asResourceKey(), DAY_LENGTH_TICKS / 4, true)
-                .timeMarker(pluginKey("lunar_evening").asResourceKey(), DAY_LENGTH_TICKS / 2, true)
-                .timeMarker(pluginKey("lunar_midnight").asResourceKey(), DAY_LENGTH_TICKS / 4 * 3, true)
+                .timeMarker(galacticKey("lunar_morning").asResourceKey(), 0, true)
+                .timeMarker(galacticKey("lunar_noon").asResourceKey(), DAY_LENGTH_TICKS / 4, true)
+                .timeMarker(galacticKey("lunar_evening").asResourceKey(), DAY_LENGTH_TICKS / 2, true)
+                .timeMarker(galacticKey("lunar_midnight").asResourceKey(), DAY_LENGTH_TICKS / 4 * 3, true)
                 .register()
         )
         .register()
 
-    private val lunarMaria = Biome.builder(pluginKey("lunar_maria").asResourceKey())
+    private val lunarMaria = Biome.builder(galacticKey("lunar_maria").asResourceKey())
         .attribute(EnvironmentAttributes.FOG_COLOR, Color.BLACK.asRGB())
         .attribute(EnvironmentAttributes.SKY_COLOR, Color.BLACK.asRGB())
         .climateSettings(
@@ -157,7 +157,7 @@ object Moon : AlienWorld(pluginKey("moon")) {
         )
         .register()
 
-    private val lunarHighlands = Biome.builder(pluginKey("lunar_highlands").asResourceKey())
+    private val lunarHighlands = Biome.builder(galacticKey("lunar_highlands").asResourceKey())
         .attribute(EnvironmentAttributes.FOG_COLOR, Color.BLACK.asRGB())
         .attribute(EnvironmentAttributes.SKY_COLOR, Color.BLACK.asRGB())
         .climateSettings(
@@ -191,7 +191,7 @@ object Moon : AlienWorld(pluginKey("moon")) {
         )
         .register()
 
-    private val lunarFarSide = Biome.builder(pluginKey("lunar_far_side").asResourceKey())
+    private val lunarFarSide = Biome.builder(galacticKey("lunar_far_side").asResourceKey())
         .attribute(EnvironmentAttributes.FOG_COLOR, Color.BLACK.asRGB())
         .attribute(EnvironmentAttributes.SKY_COLOR, Color.BLACK.asRGB())
         .climateSettings(
@@ -224,7 +224,7 @@ object Moon : AlienWorld(pluginKey("moon")) {
         )
         .register()
 
-    private val impactBasin = Biome.builder(pluginKey("lunar_impact_basin").asResourceKey())
+    private val impactBasin = Biome.builder(galacticKey("lunar_impact_basin").asResourceKey())
         .attribute(EnvironmentAttributes.FOG_COLOR, Color.BLACK.asRGB())
         .attribute(EnvironmentAttributes.SKY_COLOR, Color.BLACK.asRGB())
         .climateSettings(
@@ -308,7 +308,7 @@ object Moon : AlienWorld(pluginKey("moon")) {
         .register()
 
     private val erosionNoise = NoiseParameters.builder()
-        .resourceKey(pluginKey("lunar_erosion").asResourceKey())
+        .resourceKey(galacticKey("lunar_erosion").asResourceKey())
         .firstOctave(-10)
         .amplitudes(2.0, 1.0, 0.0)
         .build()
@@ -317,7 +317,7 @@ object Moon : AlienWorld(pluginKey("moon")) {
     private val impactBasinNoise = DensityFunction
         .noise(
             NoiseParameters.builder()
-                .resourceKey(pluginKey("lunar_impact_basins").asResourceKey())
+                .resourceKey(galacticKey("lunar_impact_basins").asResourceKey())
                 .firstOctave(-9)
                 .amplitudes(1.0)
                 .build()
