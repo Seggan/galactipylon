@@ -5,6 +5,7 @@ import io.github.seggan.galactipylon.GalacticRegistry
 import io.github.seggan.galactipylon.Galactipylon
 import io.github.seggan.galactipylon.celestials.PlanetaryObject
 import io.github.seggan.galactipylon.celestials.property.Atmosphere
+import io.github.seggan.galactipylon.nms.airDrag
 import io.github.seggan.galactipylon.nms.gravity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -24,6 +25,7 @@ import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.world.EntitiesLoadEvent
 import org.bukkit.util.Vector
 import kotlin.math.abs
+import kotlin.math.pow
 import kotlin.time.Duration.Companion.milliseconds
 
 abstract class PlanetaryWorld(key: NamespacedKey) : PlanetaryObject(key), Listener {
@@ -42,23 +44,31 @@ abstract class PlanetaryWorld(key: NamespacedKey) : PlanetaryObject(key), Listen
     protected abstract fun loadWorld(): World
 
     protected open fun getNewVelocity(entity: Entity, velocity: Vector): Vector {
-        if (!(entity is Player && entity.isFlying) && !entity.isInWater && !entity.hasNoPhysics()) {
-            val entityGravity = entity.gravity
-            velocity.y += entityGravity
-            velocity.y -= entityGravity * gravity
+        if (!entity.isInWater && !entity.hasNoPhysics()) {
+            if (!(entity is Player && entity.isFlying)) {
+                val entityGravity = entity.gravity
+                velocity.y += entityGravity
+                velocity.y -= entityGravity * gravity
+            }
+
+            velocity.multiply(1 / entity.airDrag)
+            velocity.multiply(entity.airDrag.pow((atmosphere?.surfacePressure ?: 0.0).pow(0.7)))
         }
         return velocity
     }
 
     companion object : Listener {
 
+        fun fromWorld(world: World): PlanetaryWorld? {
+            return GalacticRegistry.CELESTIAL_OBJECTS.find { it is PlanetaryWorld && it.world == world } as? PlanetaryWorld
+        }
+
         private val movementDispatcher = BukkitMainThreadDispatcher(Galactipylon, 1)
         private val movementScope = CoroutineScope(movementDispatcher + Job())
 
         private fun registerEntityForMovementModification(entity: Entity) {
             val startWorld = entity.world
-            val obj = GalacticRegistry.CELESTIAL_OBJECTS
-                .find { it is PlanetaryWorld && it.world == startWorld } as? PlanetaryWorld ?: return
+            val obj = fromWorld(startWorld) ?: return
             movementScope.launch {
                 while (true) {
                     delay(50.milliseconds)
