@@ -11,6 +11,8 @@ import io.github.seggan.galactipylon.galacticKey
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.entity.Entity
+import org.bukkit.util.Vector
 import kotlin.time.Instant
 
 object Overworld : PlanetaryWorld(galacticKey("overworld")) {
@@ -41,4 +43,8 @@ object Overworld : PlanetaryWorld(galacticKey("overworld")) {
     override val displayMaterial = Material.GRASS_BLOCK
 
     override val mass = 5.97e24
+
+    override fun getNewVelocity(entity: Entity, velocity: Vector): Vector {
+        return velocity
+    }
 }

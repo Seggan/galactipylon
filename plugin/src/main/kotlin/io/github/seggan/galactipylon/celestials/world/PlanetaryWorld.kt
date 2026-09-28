@@ -1,20 +1,30 @@
 package io.github.seggan.galactipylon.celestials.world
 
+import io.github.pylonmc.rebar.async.BukkitMainThreadDispatcher
 import io.github.seggan.galactipylon.GalacticRegistry
+import io.github.seggan.galactipylon.Galactipylon
 import io.github.seggan.galactipylon.celestials.PlanetaryObject
 import io.github.seggan.galactipylon.celestials.property.Atmosphere
-import io.github.seggan.galactipylon.galacticKey
+import io.github.seggan.galactipylon.nms.gravity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.bukkit.NamespacedKey
 import org.bukkit.World
-import org.bukkit.attribute.Attribute
-import org.bukkit.attribute.AttributeModifier
-import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Entity
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.entity.EntityTeleportEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerTeleportEvent
-import kotlin.math.pow
+import org.bukkit.event.world.EntitiesLoadEvent
+import org.bukkit.util.Vector
+import kotlin.math.abs
+import kotlin.time.Duration.Companion.milliseconds
 
 abstract class PlanetaryWorld(key: NamespacedKey) : PlanetaryObject(key), Listener {
 
@@ -31,70 +41,70 @@ abstract class PlanetaryWorld(key: NamespacedKey) : PlanetaryObject(key), Listen
 
     protected abstract fun loadWorld(): World
 
-    val gravityModifier by lazy {
-        AttributeModifier(
-            gravityKey,
-            gravity - 1,
-            AttributeModifier.Operation.MULTIPLY_SCALAR_1
-        )
-    }
-
-    val atmosphereModifier by lazy {
-        val pressure = atmosphere?.surfacePressure ?: 0.0
-        val modifier = (1 - PLAYER_FRICTION.pow(pressure)) / (1 - PLAYER_FRICTION) // invert vanilla calculation
-        AttributeModifier(
-            atmosphereKey,
-            modifier - 1,
-            AttributeModifier.Operation.MULTIPLY_SCALAR_1
-        )
+    protected open fun getNewVelocity(entity: Entity, velocity: Vector): Vector {
+        if (!(entity is Player && entity.isFlying) && !entity.isInWater && !entity.hasNoPhysics()) {
+            val entityGravity = entity.gravity
+            velocity.y += entityGravity
+            velocity.y -= entityGravity * gravity
+        }
+        return velocity
     }
 
     companion object : Listener {
 
-        private const val PLAYER_FRICTION = 0.98
+        private val movementDispatcher = BukkitMainThreadDispatcher(Galactipylon, 1)
+        private val movementScope = CoroutineScope(movementDispatcher + Job())
 
-        private val gravityKey = galacticKey("gravity")
-        private val atmosphereKey = galacticKey("atmosphere")
+        private fun registerEntityForMovementModification(entity: Entity) {
+            val startWorld = entity.world
+            val obj = GalacticRegistry.CELESTIAL_OBJECTS
+                .find { it is PlanetaryWorld && it.world == startWorld } as? PlanetaryWorld ?: return
+            movementScope.launch {
+                while (true) {
+                    delay(50.milliseconds)
+                    if (!entity.isValid || entity.world != startWorld) break
+                    val vel = entity.velocity
+                    if (abs(vel.x) > 1e-6 || abs(vel.y) > 1e-6 || abs(vel.z) > 1e-6) {
+                        entity.velocity = obj.getNewVelocity(entity, vel)
+                    }
+                }
+            }
+        }
 
-        @EventHandler
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         private fun playerChangeWorld(e: PlayerTeleportEvent) {
             val player = e.player
-            for (obj in GalacticRegistry.CELESTIAL_OBJECTS) {
-                if (obj !is PlanetaryWorld) continue
-                if (e.from.world.uid == obj.world.uid) {
-                    player.getAttribute(Attribute.GRAVITY)?.removeModifier(gravityKey)
-                    player.getAttribute(Attribute.AIR_DRAG_MODIFIER)?.removeModifier(atmosphereKey)
-                }
-                if (e.to.world.uid == obj.world.uid) {
-                    player.getAttribute(Attribute.GRAVITY)?.addModifier(obj.gravityModifier)
-                    player.getAttribute(Attribute.AIR_DRAG_MODIFIER)?.addModifier(obj.atmosphereModifier)
+            if (e.from.world != e.to.world) {
+                movementScope.launch {
+                    delay(50.milliseconds)
+                    registerEntityForMovementModification(player)
                 }
             }
         }
 
-        @EventHandler
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         private fun entityChangeWorld(e: EntityTeleportEvent) {
-            val entity = e.entity as? LivingEntity ?: return
-            for (obj in GalacticRegistry.CELESTIAL_OBJECTS) {
-                if (obj !is PlanetaryWorld) continue
-                if (e.from.world.uid == obj.world.uid) {
-                    entity.getAttribute(Attribute.GRAVITY)?.removeModifier(gravityKey)
-                    entity.getAttribute(Attribute.AIR_DRAG_MODIFIER)?.removeModifier(atmosphereKey)
-                }
-                if (e.to?.world?.uid == obj.world.uid) {
-                    entity.getAttribute(Attribute.GRAVITY)?.addModifier(obj.gravityModifier)
-                    entity.getAttribute(Attribute.AIR_DRAG_MODIFIER)?.addModifier(obj.atmosphereModifier)
+            if (e.from.world != e.to?.world) {
+                movementScope.launch {
+                    delay(50.milliseconds)
+                    registerEntityForMovementModification(e.entity)
                 }
             }
         }
 
-        @EventHandler
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         private fun entitySpawned(e: EntitySpawnEvent) {
-            val entity = e.entity as? LivingEntity ?: return
-            val obj = GalacticRegistry.CELESTIAL_OBJECTS
-                .find { it is PlanetaryWorld && it.world == entity.world } as? PlanetaryWorld? ?: return
-            entity.getAttribute(Attribute.GRAVITY)?.addModifier(obj.gravityModifier)
-            entity.getAttribute(Attribute.AIR_DRAG_MODIFIER)?.addModifier(obj.atmosphereModifier)
+            registerEntityForMovementModification(e.entity)
+        }
+
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        private fun playerSpawn(e: PlayerJoinEvent) {
+            registerEntityForMovementModification(e.player)
+        }
+
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        private fun entityLoaded(e: EntitiesLoadEvent) {
+            e.entities.forEach(::registerEntityForMovementModification)
         }
     }
 }

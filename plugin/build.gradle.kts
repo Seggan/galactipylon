@@ -15,16 +15,12 @@ version = "1.0-SNAPSHOT"
 val rebarVersion = rootProject.property("rebar.version").toString()
 
 repositories {
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/") {
-        name = "papermc-repo"
-    }
     maven("https://repo.xenondevs.xyz/releases")
     maven("https://repo.wyck.dev/snapshots/")
 }
 
 dependencies {
-    //paperweight.paperDevBundle("26.2.build.+")
+    runtimeOnly(project(":nms"))
     compileOnly("io.papermc.paper:paper-api:26.2.build.+")
     compileOnly("io.github.pylonmc:rebar:$rebarVersion")
     paperLibrary("dev.wyck:Wyck:3.3.0-1a0feb5")
